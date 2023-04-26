@@ -1,6 +1,10 @@
 const pokeAPIBaseUrl = 'https://pokeapi.co/api/v2/pokemon/'
 const game = document.getElementById('game')
 
+let isPaused = false
+let firstPick;
+let matches;
+
 const colors = {
 	fire: '#FDDFDF',
 	grass: '#DEFDE0',
@@ -37,26 +41,80 @@ const displayPokemon = (pokemon) => {
         const type = pokemon.types[0].type.name || 'normal';
         const color = colors[type];
         return `
-        <div class='card' style='background-color:${color}'>
+        <div class='card' style='background-color:${color}' onclick='clickCard(event)' data-pokename='${pokemon.name}'>
 
+            <div class='front' >
 
+            </div>
 
             <div class='back rotated' style='background-color:${color}'>
                 <h2> ${pokemon.name} </h2>
                 <img src="${pokemon.sprites.front_default}" alt=${pokemon.name} />
             </div>
 
-            
         </div>
         `
     }).join('');
     game.innerHTML = pokemonHTML;
 }
 
-const resetGame = async () => {
-    const pokemon = await loadPokemon();
-    displayPokemon([...pokemon, ...pokemon])
+const clickCard = (event) => {
+    const pokemonCard = event.currentTarget;
+    const [front, back] = cardBackAndFront(pokemonCard)
+
+    if(front.classList.contains('rotated') || isPaused) return;
+    isPaused = true
+
+    rotateElements([front, back])
+    if(!firstPick) {
+        firstPick = pokemonCard;
+        isPaused = false
+    } else{
+        const secondPokemonName = pokemonCard.dataset.pokename;
+        const firstPokemonName = firstPick.dataset.pokename;
+        if(firstPokemonName !== secondPokemonName) {
+            const [firstFront, firstBack] = cardBackAndFront(firstPick);
+            setTimeout(() => {
+                rotateElements([front, back, firstFront, firstBack]);
+                firstPick = null;
+                isPaused = false
+            }, 500)
+        } else {
+            matches++;
+            if(matches === 8) {
+                alert('YOU WON')
+            }
+            firstPick = null;
+            isPaused = false;
+        }
+    }
+}
+
+const rotateElements = (elements) => {
+    if(typeof elements !== 'object' || !elements.length) return;
+
+    elements.forEach(element => element.classList.toggle('rotated'))
+}
+
+const cardBackAndFront = (card) => {
+    const front = card.querySelector('.front');
+    const back = card.querySelector('.back');
+    return[front, back]
+}
+
+const resetGame = () => {
+    game.innerHTML = ''
+    isPaused = true;
+    firstPick = null;
+    matches = 0;
+    setTimeout(async () => {
+        const pokemon = await loadPokemon();
+        displayPokemon([...pokemon, ...pokemon])
+        isPaused = false
+    }, 200)
+
 }
 
 
-loadPokemon();
+
+resetGame();

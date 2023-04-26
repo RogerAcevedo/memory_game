@@ -3,6 +3,14 @@
     src: url(pokemonsolid.ttf);
 }
 
+body {
+    /* background-color: rgb(33, 29, 6); */
+    background-image: url(/pokemon.jpg);
+    background-position: center;
+    background-repeat: no-repeat;
+    height: auto;
+}
+
 .container {
     font-family: pokemon;
     letter-spacing: 5px;
@@ -29,20 +37,47 @@ header {
 }
 
 .card {
-    box-shadow: 0 3px 10px rgba(480, 200, 200, 0.9);
+    box-shadow: 0 3px 10px rgba(780, 390, 200, 0.9);
     border-radius: 10px;
     position: relative;
     overflow: hidden;
+    transform-style: preserve-3d;
 }
 
 .front, .back {
     height: 100%;
     width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    backface-visibility: hidden;
+    transition: transform 0.5s;
 }
 
 .front {
     background-image: url(/pokeball.png);
     background-position: center;
     background-repeat: no-repeat;
-    background-color: black;
+    background-color: rgb(30, 67, 214);
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
+
+.rotated{
+    transform: rotateY(180deg);
+}
+
+button , h1{
+    font-size: 19px;
+    background-color: red;
+    color: white;
+    border-radius: 10px;
+    border: none;
+    padding: 0px 18px;
+    font-family: pokemon;
+    cursor: pointer;
+}
+
